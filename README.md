@@ -8,3 +8,10 @@ can output all plants, what to water today, next 30 days of watering a certain p
 if time, have journal entry. do it all in java gui?. 
 
 plant guessing game
+
+Need:
+- input
+- list
+- procedure
+- loop/algorithm
+- procedure call
