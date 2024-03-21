@@ -17,6 +17,18 @@ plants = []
 def add_new_plant():
     # get necessary info, make new Plant, add Plant to list
     common_name = input("What is the common name for your plant? ")
+    name = "Unnamed"
+    cycle = 1
+    species = "Unknown"
+    plant_info = [common_name, name, cycle, species]
+    exit = False
+    while(not exit):
+        print("1. Common name: " + common_name)
+        print("2. Plant name: " + name)
+        print("3. Water every: " + cycle + " day(s)")
+        print("4. Species: " + species)
+        edit = input("Which of the following would you like to change? Reference by number, or, '-1' to exit.\n")
+
     new_plant = Plant(common_name)
     plants.append(new_plant)
 
