@@ -1,17 +1,32 @@
 # create_task
-plant watering calendar type thing. 
+This is a ptython based 'reminders' program. The task list is saved in a file and reloaded. A record of completed tasks is also kept.
 
-input is plant name, when last watered, type, and days between getting watered. can also remove a plant. 
+## Authors
+Sharayu Josh
 
-can output all plants, what to water today, next 30 days of watering a certain plant. 
+## Background
+This is a useful everyday program. Forgetful people need many lists, and this program provides an easy, simple way to keep track of tasks that repeat and when that task was last performed and should be next performed.
 
-if time, have journal entry. do it all in java gui?. 
+## Download 
+This code is avilable as a [repository on GitHub](https://github.com/sharayujosh/create_task). It can be cloned, downloaded as a zip file, or forked. 
 
-plant guessing game
+## Requirments
+- Python 3
+- csv
 
-Need:
+## Execution
+- `python user.py`
+
+## Troubleshooting
+- Make sure files 'schedule.csv' and 'record.csv' are present
+- Make sure all user inputs correspond to an action
+
+### Need to be done:
 - input
 - list
 - procedure
 - loop/algorithm
 - procedure call
+
+## Bibliography
+
