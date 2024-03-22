@@ -1,40 +1,51 @@
-class Plant:
-    def __init__(self, common_name, name = "Unnamed", species = "Unknown", watering_cycle = 1):
-        self.plant = common_name
-        self.name = name
-        self.cycle = watering_cycle
-        self.species = species
-    def __str__(self):
-        return f"Plant named {self.name}"
-    def __repr__(self):
-        return self.__str__
+import csv
 
-print("Welcome to the plant calendar!")
-possible_commands = ['N', 'D', 'I', 'A', 'T', 'E']
-print("Possible commands: \nN = New plant\nD = Delete plant\nI = Info on a specific plant\nA = See all palnts\nT = Which plants to water today\nE = Exit")
-plants = []
+# class Task:
+#     def __init__(self, name, unit, cycle, last_done):
+#         self.name = name
+#         self.cycle = cycle
+#         self.cycle_unit = unit
+#         self.last_done = last_done
+#     def __str__(self):
+#         return f"{self.name}, last done {self.last_done}, must happen every {self.cycle} {self.cycle_units}"
+#     def __repr__(self):
+#         return self.__str__
 
-def add_new_plant():
+with open("schedule.csv", 'r') as schedule:
+    csvreader = csv.DictReader(schedule)
+    tasks = []
+
+    for row in csvreader:
+        tasks.append(row)
+    
+    if len(tasks) == 0:
+        new = True
+
+
+print(f"Welcome to the tasks tracker! You have {len(tasks)} tasks scheduled.")
+possible_commands = ['N', 'E', 'D', 'A', 'T', 'U', 'X']
+print("Possible commands: \nN = New task\nE = Edit task\nD = Delete task\nA = See all tasks\nT = Today's Tasks\nU = Upcoming tasks\nX = Exit")
+
+
+def add_new_task():
     # get necessary info, make new Plant, add Plant to list
-    common_name = input("What is the common name for your plant? ")
-    name = "Unnamed"
-    cycle = 1
-    species = "Unknown"
-    plant_info = [common_name, name, cycle, species]
-    exit = False
-    while(not exit):
-        print("1. Common name: " + common_name)
-        print("2. Plant name: " + name)
-        print("3. Water every: " + cycle + " day(s)")
-        print("4. Species: " + species)
-        edit = input("Which of the following would you like to change? Reference by number, or, '-1' to exit.\n")
-
-    new_plant = Plant(common_name)
-    plants.append(new_plant)
+    name = input("What is the name of your task? ")
+    unit = input("Is this task repeated every day, month, or year? ")
+    cycle = input(f"After how many {unit} should \"{name}\" be repeated? Enter an integer. ")
+    last_done = input(f"Enter the last time the task was completed in the format MM/DD/YYYY")
+    t = [name, unit, cycle, last_done]
+    with open("schedule.csv", 'a') as schedule:
+        csvwriter = csv.DictWriter(schedule, fieldnames=["name", "unit", "cycle", "last_done"])
+        if new:
+            csvwriter.writeheader()
+            new = False
+        csvwriter.writerow(t)
+        print("Task added.")
 
 def delete_plant():
-    # Use enumerate to print all plants in a list
-    print("Which plant would you like to delete? Identify by the corresponding number")
+    # Use enumerate to print  plants in a list
+
+    print("Which task would you like to delete?")
 
 def plant_info():
     # Find the wanted plant, call to string of that plant
