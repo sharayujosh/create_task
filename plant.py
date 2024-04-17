@@ -1,8 +1,9 @@
 # THIS CODE IS WRITTEN INDEPENDANTLY BY ME.
 
 import json
+from datetime import date
 
-# class Task:
+# class TaskManager:
 #     def __init__(self, name, unit, cycle, last_done):
 #         self.name = name
 #         self.cycle = cycle
@@ -12,38 +13,52 @@ import json
 #         return f"{self.name}, last done {self.last_done}, must happen every {self.cycle} {self.cycle_units}"
 #     def __repr__(self):
 #         return self.__str__
-with open("schedule.txt") as schedule:
-    tasks = [schedule.read()]
+tasks = {}
+records = {}
+def load_from_file():
+    with open("schedule.txt") as schedule:
+        for row in schedule:
+            tasks.update(json.loads(row)) 
 
-    print(tasks)
+        print(tasks)
+    with open("record.txt") as record:
+        for row in record:
+            records.update(json.loads(row)) 
+    print(records)
 
-with open("record.txt") as record:
-    records = [record.read()]
+def save_to_file():
+    with open("schedule.txt", 'w') as schedule:
+        schedule.write(json.dumps(tasks))
+    with open("record.txt", 'w') as record:
+        record.write(json.dumps(records))
 
-    print(record)
-
-print(f"Welcome to the tasks tracker! You have {len(tasks)//2} tasks scheduled.")
-possible_commands = ['N', 'E', 'D', 'A', 'T', 'U', 'X']
-print("Possible commands: \nN = New task\nE = Edit record notes\nD = Delete task\nA = See all tasks\nT = Today's Tasks\nU = Upcoming tasks\nX = Exit")
-
+load_from_file()
+print(f"Welcome to the tasks tracker! You have {len(tasks)} tasks scheduled.")
+possible_commands = ['N', 'R', 'E', 'D', 'A', 'T', 'U', 'X']
+print("Possible commands: \nN = New task\nR = New record\nE = Edit record notes\nD = Delete task\nA = See all tasks\nT = Today's Tasks\nU = Upcoming tasks\nX = Exit")
 
 def see_all():
     # print all plants, use repr
     print("Tasks in schedule: ")
     print(tasks)
 
+def add_record():
+    done_today = input("Which task did you do today? ")
+    today = date.today()
+    records[done_today]["last_done"] = str(today.year) + "-" + f'{str(today.month):0>2}' + "-" + f'{str(today.day):0>2}'
+
 def add_new_task():
     # get necessary info, make new Plant, add Plant to list
     name = input("What is the name of your task? ")
     cycle = input(f"After how many days should \"{name}\" be repeated? Enter an integer. ")
-    t1 = {"name":name, "cycle":cycle}
-    tasks.append(t1)
+    t1 = {name: {"cycle_days":cycle}}
+    tasks.update(t1)
     # with open("schedule.txt", 'w') as schedule:
     #     schedule.write(json.dumps(tasks))
-    last_done = input(f"Enter the last time the task was completed in the format MM/DD/YYYY: ")
+    last_done = input(f"Enter the last time the task was completed in the format YYYY-MM-DD: ")
     notes = input(f"Notes: ")
-    t2 = {"name": name, "last_done":last_done, "notes":notes}
-    records.append(t2)
+    t2 = {name:{"last_done":last_done, "notes":notes}}
+    records.update(t2)
     # with open("record.txt", 'w') as record:
     #     record.write(json.dumps(record))
 
@@ -57,12 +72,34 @@ def delete_task():
         print("Invalid key. Must be EXACT.")
 
 def edit_record():
-    # Use enumerate to print plants in a list
     see_all()
+
+days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+def days_between(date1):
+        date2 = date.today()
+        if date1.month == date2.month and date1.year == date2.year:
+            return abs(date1.day - date2.day)
+        days = days_in_month[date2.month - 1] - date1.day
+        # print("between", days, date2.month, date1.month)
+        for i in range(date2.month - 2, date1.month - 1, -1):
+            days += days_in_month[i]
+            # print(days)
+
+        days += date2.day - 1
+        # print(days)
+        days += 365 * (date1.year - date2.year)
+        days += abs(date1.year - date2.year) // 4 if date1.month != 1 else 0
+        # print(abs(days))
+        return abs(days)
 
 def to_do_today():
     #print all plants to be watered today, include date
-    print("Tasks to do today, insert-date-here :")
+    print("Tasks to do today:")
+    for i in tasks:
+        last = date.fromisoformat(records[i]["last_done"])
+        if(days_between(last) >= int(tasks[i]["cycle_days"])):
+            print(i)
+    
 
 def upcoming():
     #print all plants to be watered today, include date
@@ -80,6 +117,8 @@ while(action != 'E'):
     
     if action == 'N':
         add_new_task()
+    if action == 'R':
+        add_record()
     if action == 'E':
         edit_record()
     if action == 'D':
@@ -94,7 +133,7 @@ while(action != 'E'):
         print("Thanks for visiting :)")
         break
 
-    with open("schedule.txt", 'w') as schedule:
-        schedule.write(json.dumps(tasks))
-    with open("record.txt", 'w') as record:
-        record.write(json.dumps(records))
+    print(tasks)
+    print(records)
+    
+    save_to_file()
