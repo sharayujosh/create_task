@@ -1,1 +1,1 @@
-{"test3": {"cycle_days": "5"}, "Testing": {"cycle_days": "2"}}
+{"test3": {"cycle_days": "5"}, "Testing": {"cycle_days": "2"}, "task": {"cycle_days": "3"}}

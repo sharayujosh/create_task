@@ -1,7 +1,7 @@
 # THIS CODE IS WRITTEN INDEPENDANTLY BY ME.
 
 import json
-from datetime import date
+from datetime import date, timedelta
 
 tasks = {}
 records = {}
@@ -10,11 +10,11 @@ def load_from_file():
         for row in schedule:
             tasks.update(json.loads(row)) 
 
-        print(tasks)
+        #print(tasks)
     with open("record.txt") as record:
         for row in record:
             records.update(json.loads(row)) 
-    print(records)
+    # print(records)
 
 def save_to_file():
     with open("schedule.txt", 'w') as schedule:
@@ -29,7 +29,8 @@ print("Possible commands: \nN = New task\nR = New record\nE = Edit record notes\
 
 def see_all():
     print("Tasks in schedule: ")
-    print(tasks)
+    for key in tasks:
+        print(key)
 
 def add_record():
     done_today = input("Which task did you do today? ")
@@ -60,8 +61,7 @@ def edit_record():
     print("Currently unavailable")
 
 days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-def days_between(date1):
-        date2 = date.today()
+def days_between(date1, date2 = date.today()):
         if date1.month == date2.month and date1.year == date2.year:
             return abs(date1.day - date2.day)
         days = days_in_month[date2.month - 1] - date1.day
@@ -81,8 +81,23 @@ def to_do_today():
         if(days_between(last) >= int(tasks[i]["cycle_days"])):
             print(i)
 
+def to_do_someday(day):
+    to_do = []
+    for i in tasks:
+        last = date.fromisoformat(records[i]["last_done"])
+        if(days_between(last, day) >= int(tasks[i]["cycle_days"])):
+            to_do.append(i)
+    if(len(to_do) != 0):
+        return to_do
+    else:
+        return ["No tasks upcoming"]
+
 def upcoming():
-    print("Tasks to do today, insert-date-here :")
+    print("Tasks to do in the next 3 days:")
+    day = date.today() + timedelta(days = 3)
+    to_do = to_do_someday(day)
+    for i in to_do:
+        print(i)
 
 action = 'S'
 while(action != 'E'):
@@ -110,7 +125,7 @@ while(action != 'E'):
         print("Thanks for visiting :)")
         break
 
-    print(tasks)
-    print(records)
+    # print(tasks)
+    # print(records)
     
     save_to_file()
