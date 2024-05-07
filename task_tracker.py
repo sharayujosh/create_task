@@ -10,11 +10,9 @@ def load_from_file():
         for row in schedule:
             tasks.update(json.loads(row)) 
 
-        #print(tasks)
     with open("record.txt") as record:
         for row in record:
-            records.update(json.loads(row)) 
-    # print(records)
+            records.update(json.loads(row))
 
 def save_to_file():
     with open("schedule.txt", 'w') as schedule:
@@ -24,8 +22,9 @@ def save_to_file():
 
 load_from_file()
 print(f"Welcome to the tasks tracker! You have {len(tasks)} tasks scheduled.")
-possible_commands = ['N', 'R', 'E', 'D', 'A', 'T', 'U', 'X']
-print("Possible commands: \nN = New task\nR = New record\nE = Edit record notes\nD = Delete task\nA = See all tasks\nT = Today's Tasks\nU = Upcoming tasks\nX = Exit")
+possible_commands = ['N', 'R', 'E', 'D', 'S', 'A', 'T', 'U', 'X']
+print("Possible commands: \nN = New task\nR = New record\nE = Edit task cycle\nD = Delete task\nS = See task info\nA = See all tasks\nT = Today's Tasks\nU = Upcoming tasks\nX = Exit")
+
 
 def see_all():
     print("Tasks in schedule: ")
@@ -36,10 +35,11 @@ def add_record():
     done_today = input("Which task did you do today? ")
     today = date.today()
     records[done_today]["last_done"] = str(today.year) + "-" + f'{str(today.month):0>2}' + "-" + f'{str(today.day):0>2}'
+    print("Added!")
 
 def add_new_task():
     name = input("What is the name of your task? ")
-    cycle = input(f"After how many days should \"{name}\" be repeated? Enter an integer. ")
+    cycle = int(input(f"After how many days should \"{name}\" be repeated? Enter an integer. "))
     t1 = {name: {"cycle_days":cycle}}
     tasks.update(t1)
 
@@ -56,9 +56,11 @@ def delete_task():
     except KeyError:
         print("Invalid key. Must be EXACT.")
 
-def edit_record():
+def edit_task():
     see_all()
-    print("Currently unavailable")
+    key = input("Name of task to edit: ")
+    new_cycle = int(input("What is the new cycle period for this task (in days)? "))
+    tasks[key] =  {"cycle_days":new_cycle}
 
 days_in_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 def days_between(date1, date2 = date.today()):
@@ -78,19 +80,25 @@ def to_do_today():
     print("Tasks to do today:")
     for i in tasks:
         last = date.fromisoformat(records[i]["last_done"])
-        if(days_between(last) >= int(tasks[i]["cycle_days"])):
+        if(days_between(last) >= tasks[i]["cycle_days"]):
             print(i)
 
 def to_do_someday(day):
     to_do = []
     for i in tasks:
         last = date.fromisoformat(records[i]["last_done"])
-        if(days_between(last, day) >= int(tasks[i]["cycle_days"])):
+        if(days_between(last, day) >= tasks[i]["cycle_days"]):
             to_do.append(i)
     if(len(to_do) != 0):
         return to_do
     else:
         return ["No tasks upcoming"]
+
+def see_task():
+    see_all()
+    key = input("Name of task to see: ")
+    print(key, 'is done every', tasks[key]['cycle_days'], 'days.')
+    print('Last done:', records[key]['last_done'], 'with notes \"', records[key]['notes'], '\"')
 
 def upcoming():
     print("Tasks to do in the next 3 days:")
@@ -99,9 +107,10 @@ def upcoming():
     for i in to_do:
         print(i)
 
+
 action = 'S'
-while(action != 'E'):
-    action = input("What would you like to do? ")
+while(action != 'X'):
+    action = input("\nWhat would you like to do? ")
 
     if action not in possible_commands:
         print("Please enter a valid action. This is case sensitive.")
@@ -112,9 +121,11 @@ while(action != 'E'):
     if action == 'R':
         add_record()
     if action == 'E':
-        edit_record()
+        edit_task()
     if action == 'D':
         delete_task()
+    if action == 'S':
+        see_task()
     if action == 'A':
         see_all()
     if action == 'T':
@@ -124,8 +135,5 @@ while(action != 'E'):
     if action == 'X':
         print("Thanks for visiting :)")
         break
-
-    # print(tasks)
-    # print(records)
     
     save_to_file()
