@@ -68,6 +68,7 @@ def days_between(date1, date2 = date.today()):
             return abs(date1.day - date2.day)
         days = days_in_month[date2.month - 1] - date1.day
 
+        # date2 is assumed to be after date1, both months are subtracted by one to line up with list index
         for i in range(date2.month - 2, date1.month - 1, -1):
             days += days_in_month[i]
 
